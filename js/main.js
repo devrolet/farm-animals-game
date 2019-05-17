@@ -7,9 +7,9 @@ var GameState = {
     this.load.image('background', 'assets/images/background.png');
     this.load.image('chicken', 'assets/images/chicken.png');
     this.load.image('arrow', 'assets/images/arrow.png');
-    // this.load.image('horse', 'assets/images/horse.png');
-    // this.load.image('pig', 'assets/images/pig.png');
-    // this.load.image('sheep', 'assets/images/sheep3.png');
+    this.load.image('horse', 'assets/images/horse.png');
+    this.load.image('pig', 'assets/images/pig.png');
+    this.load.image('sheep', 'assets/images/sheep3.png');
   },
   // executed after everything is loaded
   create: function() {
@@ -23,15 +23,32 @@ var GameState = {
     // create a new sprite
     this.background = this.game.add.sprite(0, 0, 'background');
 
-    // Set Center of World
-    this.chicken = this.game.add.sprite(this.game.world.centerX, this.game.world.centerY, 'chicken');
-    // place sprite by it's center, not the top-left corner
-    this.chicken.anchor.setTo(0.5);
+    // group for animals
+    var animalData = [
+      {key: 'chicken', text: 'CHICKEN'},
+      {key: 'horse', text: 'HORSE'},
+      {key: 'pig', text: 'PIG'},
+      {key: 'sheep', text: 'SHEEP'}
+    ];
 
-    // left arrow allow user input
-    this.chicken.inputEnabled = true;
-    this.chicken.input.pixelPerfectClick = true;
-    this.chicken.events.onInputDown.add(this.animateAnimal, this);
+    this.animals = this.game.add.group();
+
+    var self = this;
+    var animal;
+
+    animalData.forEach(function(element) {
+      animal = self.animals.create(-1000, this.game.world.centerY, element.key);
+
+      animal.customParams = {text: element.text};
+      animal.anchor.setTo(0.5);
+
+      animal.inputEnabled = true;
+      animal.input.pixelPerfectClick = true;
+      animal.events.onInputDown.add(self.animateAnimal, self);
+    });
+
+    this.currentAnimal = this.animals.next();
+    this.currentAnimal.position.set(this.game.world.centerX, this.game.world.centerY);
 
     // left arrow
     this.leftArrow = this.game.add.sprite(60, this.game.world.centerY, 'arrow');
@@ -54,30 +71,10 @@ var GameState = {
     this.rightArrow.input.pixelPerfectClick = true;
     this.rightArrow.events.onInputDown.add(this.switchAnimal, this);
 
-    // this.chicken.scale.setTo(2,1);
-
-    // this.horse = this.game.add.sprite(120, 10, 'horse');
-    // this.horse.scale.setTo(0.5);
-
-    // this.pig = this.game.add.sprite(500, 300, 'pig');
-    // // Flip image
-    // this.pig.anchor.setTo(0.5);
-    // // Negative numbers flip image (flip on x, flip on y)
-    // this.pig.scale.setTo(-1, 1);
-
-
-    // this.sheep = this.game.add.sprite(100, 250, 'sheep');
-    // this.sheep.scale.setTo(0.5);
-    // // rotate image on it's axis
-    // this.sheep.anchor.setTo(0.5);
-    // // rotate the image
-    // this.sheep.angle = -45;
-
   },
   // this is executed multiple times per second
   update: function() {
-    // constant rotate using the update method
-    // this.sheep.angle += 0.5;
+    
   },
   switchAnimal: function (sprite, event) {
     console.log('move animal');
